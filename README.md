@@ -1,29 +1,55 @@
 # skill-router
 
-A reusable OpenClaw/AgentSkill-style skill for routing plain-language requests into the right tool, workflow, or agent path.
+An OpenClaw/AgentSkill-style routing skill for environments where the agent has multiple skills, tools, runtimes, or delegation paths and needs to choose the right one deliberately.
 
-## What this repo is
+`skill-router` is not a domain skill. It is a control skill: it helps an agent decide **which** path should handle a request, **when** to ask a clarifying question, and **how** to fall back without drifting away from the user’s actual intent.
 
-`skill-router` is a publishable skill repo template built around a routing skill. It helps an agent interpret user intent, select the correct execution path, and avoid weak fallback behavior like guessing, misrouting, or using the wrong runtime.
+## Why this exists
 
-This repo is structured for public reuse: concise skill entrypoint, deeper reference docs, examples, optional helper scripts, and basic GitHub hygiene.
+As skill collections grow, agents start failing in predictable ways:
 
-## Features
+- routing broad requests through the wrong specialist
+- overusing generic execution paths
+- asking unnecessary clarifying questions
+- choosing a fallback that changes the semantics of the task
+- treating tool availability as a reason to improvise
 
-- Intent-based request routing
-- Clear trigger phrases and use conditions
-- Explicit "do / do not do" guidance
-- Progressive documentation structure
-- Example prompts and workflows
-- Optional script hooks for validation or deterministic helpers
+This skill exists to make routing policy explicit, reusable, and easy to install.
 
-## Repository structure
+## What it covers
+
+- intent-first routing
+- specialist-vs-generic path selection
+- clarification rules
+- fallback discipline
+- examples for multi-skill environments
+
+## Good fit
+
+Use `skill-router` when your agent environment has:
+
+- multiple installed skills with overlapping scope
+- more than one execution runtime
+- both local and delegated execution paths
+- external tool paths that should only be used intentionally
+- a need for consistent routing behavior across sessions
+
+## Not a good fit
+
+This repo is probably unnecessary if:
+
+- your agent has only a few narrowly scoped skills
+- there is no meaningful path ambiguity
+- you want a domain skill instead of a routing/meta skill
+
+## Repository layout
 
 ```text
 skill-router/
 ├── README.md
 ├── LICENSE
 ├── CHANGELOG.md
+├── CONTRIBUTING.md
 ├── .gitignore
 ├── skill/
 │   ├── SKILL.md
@@ -43,62 +69,59 @@ skill-router/
 
 ## Install
 
-### Option 1: clone the repo
+### Option 1: install the full repo
 
 ```bash
-git clone https://github.com/<your-user>/skill-router.git
+git clone https://github.com/austincadd/skill-router.git
 ```
 
-Then copy or symlink the `skill/` directory into the location your OpenClaw/AgentSkill setup expects.
+Then copy or symlink the `skill/` directory into the skill location your agent runtime expects.
 
-### Option 2: vendor just the skill folder
+### Option 2: vendor only the skill files
 
-If you only want the skill itself, copy:
+If you just want the skill itself, copy:
 
 - `skill/SKILL.md`
 - `skill/REFERENCE.md`
 - `skill/EXAMPLES.md`
-- `skill/scripts/` (if you want helpers)
+- `skill/scripts/validate-skill.sh` (optional)
 
-## Configuration
+## Quick validation
 
-This starter repo is instruction-first and works without external secrets.
+```bash
+cd skill
+./scripts/validate-skill.sh
+```
 
-If you adapt it for a real routing skill, document:
+## How to use it
 
-- supported agent/runtime IDs
-- required CLIs or binaries
-- expected working directory assumptions
-- fallback behavior
-- any environment variables
+1. Install the skill alongside your other skills.
+2. Let the agent load it when a request could fit multiple paths.
+3. Keep `SKILL.md` short and operational.
+4. Put edge cases, fallback rules, and deeper policy in `REFERENCE.md`.
+5. Add real examples before relying on it heavily.
 
-## Usage
+## Design rules
 
-See:
+This repo follows a few simple packaging rules:
 
-- `skill/SKILL.md` for the main skill entrypoint
-- `skill/REFERENCE.md` for detailed routing policy
-- `skill/EXAMPLES.md` for invocation examples
-- `examples/` for adoption examples and sample workflows
+- `SKILL.md` should stay concise and trigger-focused
+- examples should be realistic, not toy prompts only
+- helper scripts should be deterministic and optional
+- fallback behavior should stay close to the intended path
+- routing rules should prefer the most specific correct path
 
 ## Versioning
 
 This repo follows Semantic Versioning.
 
-- `PATCH` for doc fixes and non-breaking wording updates
-- `MINOR` for new workflows/examples/helper scripts
-- `MAJOR` for breaking structure or behavior changes
-
-See `CHANGELOG.md` for release history.
+- `PATCH` — wording, examples, doc cleanup
+- `MINOR` — new routing branches, examples, helper scripts
+- `MAJOR` — breaking structure or behavioral changes
 
 ## Contributing
 
-Contributions should keep the skill:
-
-- concise at the entrypoint
-- explicit about triggers
-- clear about boundaries and failure handling
-- easy for another operator to install and extend
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 

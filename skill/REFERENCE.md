@@ -2,72 +2,95 @@
 
 ## Purpose
 
-This skill exists to make agent routing explicit and reusable.
+`skill-router` is a meta-skill for environments where routing decisions matter as much as execution quality.
 
-It is useful when an agent environment has:
-- multiple installed skills
-- multiple execution runtimes
-- multiple tools that could satisfy the same request
-- risk of misrouting due to vague user language
+It helps agents choose the right path when there are multiple plausible options: specialist skills, tool-specific skills, runtime-specific paths, delegated execution, or documented fallback flows.
 
-## Routing priorities
+## Routing order
 
-Use this order:
+Use this order by default:
 
 1. exact domain skill
 2. exact tool-specific skill
-3. exact runtime-specific skill
+3. exact runtime-specific path
 4. generic workflow skill
 5. clarification
 
-If more than one path appears valid, prefer the most specific path with the lowest ambiguity.
+If two paths look valid, choose the one that is:
+- more specific
+- less lossy
+- closer to the user’s requested execution model
 
 ## Trigger conditions
 
-Use this skill when:
-- a request could map to more than one skill
-- the user uses shorthand that may imply a specific path
-- a task involves selecting between direct execution, delegation, or external runtime use
-- fallback behavior matters
-- the agent needs consistent routing policy across sessions
+Use this skill when any of these are true:
+
+- the request could map to multiple skills
+- the user uses shorthand that implies a path choice
+- the agent must choose between local work and delegated work
+- the agent must choose between persistent and one-shot runtime behavior
+- fallback behavior could materially affect outcomes
 
 ## Clarification rule
 
-Ask one question only when the answer materially changes execution.
+Ask one focused question only when the answer changes execution in a meaningful way.
 
-Examples:
+Good examples:
 - "Do you want this as a one-shot run or a persistent session?"
-- "Should I route this through GitHub tooling or just scaffold it locally?"
+- "Should I publish this to GitHub, deploy it, or draft release assets only?"
 
-Do not ask for clarification when the better route is obvious.
+Bad examples:
+- asking for reassurance when the correct path is already obvious
+- asking broad planning questions that stall execution
 
-## Fallback behavior
+## Fallback discipline
 
-When the preferred path is unavailable:
+When the preferred path fails:
 
 1. say what failed
-2. keep the fallback close to the preferred path
-3. avoid fallback drift into unrelated tooling
-4. preserve user intent
+2. keep the fallback semantically close
+3. avoid unrelated tooling pivots
+4. preserve the requested outcome
+5. say when the fallback changes capabilities
 
 Bad fallback:
-- switching from a routing skill to a random shell-heavy workaround with different semantics
+- preferred path = managed coding runtime
+- fallback = ad hoc shell hacking with different behavior and no continuity
 
 Good fallback:
-- switching from runtime-managed routing to a documented direct tool path with equivalent purpose
+- preferred path = managed coding runtime
+- fallback = documented direct CLI path for the same harness
+
+## Common routing patterns
+
+### Specialist skill vs generic skill
+
+If a specialist exists and clearly matches, prefer it even if the generic path could technically do the task.
+
+### Direct execution vs delegation
+
+Delegate when the task benefits from a separate runtime, longer execution, or tool-specific context. Execute directly when the task is simple, local, and unambiguous.
+
+### One-shot vs persistent runtime
+
+Use persistent sessions for iterative work, ongoing conversations, or repo-bound execution. Use one-shot runs for isolated prompts and disposable tasks.
 
 ## Packaging guidance
 
-For public reuse, keep:
-- `SKILL.md` concise and trigger-focused
-- `REFERENCE.md` detailed but readable
-- `EXAMPLES.md` realistic
-- helper scripts optional and deterministic
+For public skill repos:
+
+- keep `SKILL.md` under tight control
+- split detailed policy into `REFERENCE.md`
+- include realistic examples
+- include helper scripts only when they reduce ambiguity or setup pain
+- make install/adoption friction low
 
 ## Maintenance guidance
 
-When updating the skill:
-- keep examples current
-- note new routing branches in the changelog
-- avoid turning `SKILL.md` into a giant reference dump
-- split rare edge cases into reference docs instead of bloating the entrypoint
+When updating:
+
+- add examples for every meaningful new routing branch
+- keep the description trigger-focused
+- avoid turning the skill into a generic methodology essay
+- keep fallback rules explicit
+- update changelog entries with actual behavior changes, not vague summaries

@@ -1,46 +1,74 @@
 # skill-router examples
 
-## Example 1: coding vs direct edit
+## 1) Coding runtime vs direct local edit
 
 User:
 > Build this feature in Codex
 
 Route:
-- use the coding-agent / ACP harness path, not a direct local edit path
+- use the coding runtime / ACP-style path
+- do not silently convert it into a direct local edit
 
-## Example 2: skill vs tool request
+Why:
+- the user specified the execution model, not just the outcome
+
+## 2) Tool-specific skill vs generic coding workflow
 
 User:
 > Check the CI on this GitHub PR
 
 Route:
-- use GitHub-specific tooling/skill
-- do not route through a generic coding workflow
+- use GitHub-specific tooling or skill
+- do not route through a general coding workflow
 
-## Example 3: ambiguous external action
+Why:
+- this is a repository-status task, not an implementation task
+
+## 3) Ambiguous publish request
 
 User:
 > Publish this
 
 Route:
 - ask one clarifying question if destination is unclear
-- do not guess whether that means GitHub, deployment, package publish, or social posting
+- likely options might include GitHub, deployment, package publishing, or posting content
 
-## Example 4: no specialized path available
+Why:
+- "publish" has multiple materially different meanings
+
+## 4) Fallback when no specialist exists
 
 User:
 > Summarize this local transcript file
 
 Route:
-- use the summarize skill if present
-- if unavailable, use the nearest supported local text extraction path
+- use the summarize skill if available
+- otherwise use the nearest documented text-extraction/summarization path
 - state the fallback clearly
 
-## Example 5: persistent vs one-shot runtime
+Why:
+- fallback should preserve the task, not invent a different one
+
+## 5) Persistent vs one-shot runtime
 
 User:
-> Start a Codex thread for this repo and keep working there
+> Start a Codex session for this repo and keep working there
 
 Route:
-- use the persistent session path
-- do not use a one-shot execution path
+- use a persistent session path
+- do not use one-shot execution
+
+Why:
+- the user asked for continuity
+
+## 6) Delegation vs direct handling
+
+User:
+> Refactor this codebase and keep iterating until the failing tests pass
+
+Route:
+- prefer a delegated or long-running coding path
+- avoid treating this as a single direct-edit turn
+
+Why:
+- task size and iteration requirements change the correct path

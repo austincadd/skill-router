@@ -1,51 +1,60 @@
 ---
 name: skill-router
-description: Route plain-language user requests into the correct skill, runtime, tool, or workflow path. Use when a request could fit multiple execution paths and the agent needs explicit routing rules, trigger phrases, handoff criteria, or fallback behavior.
+description: Route broad or ambiguous user requests into the correct skill, tool, runtime, or delegation path. Use when multiple execution paths could fit and the agent needs explicit routing, clarification, and fallback rules instead of guessing.
 ---
 
 # Skill Router
 
 ## Quick start
 
-Use this skill when a user asks for something that could be handled in more than one way and the agent needs to choose the right path deliberately.
+Use this skill when the request is real but the path is unclear.
 
-Examples:
-- route a coding request to a coding agent
-- route a GitHub request to GitHub tooling
-- route a weather request to a weather skill
-- route a vague request to clarification instead of premature execution
+Typical cases:
+- a request could fit more than one installed skill
+- the agent must choose between direct execution and delegation
+- a user asks for something broad like "publish this" or "run this in Codex"
+- fallback behavior matters because the preferred path may be unavailable
 
-## What this skill does
+## Core rule
 
-- identifies routing intent
-- matches the request to the correct execution path
-- defines when to ask a clarifying question
-- defines when not to use a path
-- documents fallback behavior when the preferred path is unavailable
+Route by **actual task semantics**, not by surface wording alone.
 
 ## Routing workflow
 
-1. Identify the user’s actual intent.
-2. Check whether a more specific skill already exists.
-3. Prefer the narrowest correct path over a generic one.
-4. If the action is ambiguous and materially changes execution, ask one focused question.
-5. If the preferred path is unavailable, use the documented fallback instead of inventing one.
+1. Identify the real outcome the user wants.
+2. Check whether a more specific skill already fits.
+3. Prefer the narrowest correct path.
+4. Ask one clarifying question only if the answer materially changes execution.
+5. If the preferred path is unavailable, use the nearest documented fallback.
+
+## Use this skill when
+
+- multiple skills overlap
+- multiple runtimes exist
+- there is a risk of misrouting
+- the agent needs a stable fallback policy
+
+## Do not use this skill when
+
+- a single obvious specialist skill already applies
+- the request is purely conversational
+- no meaningful routing choice exists
 
 ## Do
 
-- route by task type, not by superficial keywords alone
-- prefer the most specific applicable skill
-- keep fallback behavior explicit
-- document boundary cases
+- prefer specialist paths over generic ones
+- keep clarifying questions minimal
+- make routing failures explicit
+- preserve user intent when falling back
 
 ## Don’t
 
-- guess intent when one clarifying question would resolve it
-- route everything through one generic path
-- ignore stronger existing specialized skills
-- hide routing failures
+- guess when one question would resolve ambiguity
+- route everything through one favorite path
+- use fallback behavior that changes the nature of the task
+- bury routing policy in long prose
 
-## Files
+## More
 
-- See [REFERENCE.md](./REFERENCE.md) for detailed routing policy.
-- See [EXAMPLES.md](./EXAMPLES.md) for concrete examples.
+- See [REFERENCE.md](./REFERENCE.md) for policy and maintenance guidance.
+- See [EXAMPLES.md](./EXAMPLES.md) for concrete request-routing examples.
